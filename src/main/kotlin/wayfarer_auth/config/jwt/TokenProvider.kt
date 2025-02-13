@@ -1,4 +1,4 @@
-package wayfarer_user.config.jwt
+package wayfarer_auth.config.jwt
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
@@ -13,7 +13,7 @@ class TokenProvider(
     private val signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey)) // access token secret key
     fun generateToken(userId: Long): String {
         val now = Date()
-        val expiryDate = Date(now.time + jwtProperties.expiration.accessTokenExpiration)
+        val expiryDate = Date(now.time + jwtProperties.accessTokenExpiration)
 
         return makeToken(expiryDate, userId)
     }

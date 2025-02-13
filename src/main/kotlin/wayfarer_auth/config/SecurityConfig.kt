@@ -1,4 +1,4 @@
-package wayfarer_user.config
+package wayfarer_auth.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
