@@ -33,22 +33,22 @@ class TokenProvider(
             .compact()
     }
 
-    fun validateAccessToken(token: String): Boolean {
-        try {
-            getAccessTokenClaims(token)
-            return true
-        } catch (e: Exception) {
-            when (e) {
-                is SecurityException -> {}  // Invalid JWT Token
-                is MalformedJwtException -> {}  // Invalid JWT Token
-                is ExpiredJwtException -> {}    // Expired JWT Token
-                is UnsupportedJwtException -> {}    // Unsupported JWT Token
-                is IllegalArgumentException -> {}   // JWT claims string is empty
-                else -> {}
-            }
-            throw e
-        }
-    }
+//    fun validateAccessToken(token: String): Boolean {
+//        try {
+//            getAccessTokenClaims(token)
+//            return true
+//        } catch (e: Exception) {
+//            when (e) {
+//                is SecurityException -> {}  // Invalid JWT Token
+//                is MalformedJwtException -> {}  // Invalid JWT Token
+//                is ExpiredJwtException -> {}    // Expired JWT Token
+//                is UnsupportedJwtException -> {}    // Unsupported JWT Token
+//                is IllegalArgumentException -> {}   // JWT claims string is empty
+//                else -> {}
+//            }
+//            throw e
+//        }
+//    }
 
     fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
         val claims: Claims = getAccessTokenClaims(token)

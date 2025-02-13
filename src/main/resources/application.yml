@@ -21,4 +21,4 @@ jwt:
   secret: ${JWT_SECRET}
   expiration:
     access: 3600000 # 1시간
-    refresh: 2592000000 # 30일
+    refresh: 604800000 # 7일
