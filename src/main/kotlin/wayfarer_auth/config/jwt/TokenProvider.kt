@@ -52,14 +52,12 @@ class TokenProvider(
 
     fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
         val claims: Claims = getAccessTokenClaims(token)
-        val auth = claims["auth"] ?: throw RuntimeException("Invalid Access Token")
+        val userId = claims.subject ?: throw RuntimeException("Invalid token")
 
         // 권한 정보 추출
-        val authorities: Collection<GrantedAuthority> = (auth as String)
-            .split(",")
-            .map { SimpleGrantedAuthority(it) }
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+        val principal = User(userId, "", authorities)
 
-        val principal = User(claims.subject, "", authorities)
         return UsernamePasswordAuthenticationToken(principal, token, authorities)
     }
 
