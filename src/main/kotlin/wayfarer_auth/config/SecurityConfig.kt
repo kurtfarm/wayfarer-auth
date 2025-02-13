@@ -48,7 +48,7 @@ class SecurityConfig(
     fun corsConfigurationSource(): CorsConfigurationSource { //TODO : 게이트웨이 설정에 따라 변경
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", CorsConfiguration().apply {
-                allowedOrigins = listOf("*")
+                allowedOrigins = listOf("*") // 추후에 gateway 주소가 들어갈 예정
                 allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 allowedHeaders = listOf("Authorization", "Authorization-refresh", "Content-Type")
                 allowCredentials = true
