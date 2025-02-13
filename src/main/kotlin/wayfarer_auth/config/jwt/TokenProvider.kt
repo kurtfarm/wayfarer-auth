@@ -3,6 +3,10 @@ package wayfarer_auth.config.jwt
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -44,6 +48,19 @@ class TokenProvider(
             }
             throw e
         }
+    }
+
+    fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
+        val claims: Claims = getAccessTokenClaims(token)
+        val auth = claims["auth"] ?: throw RuntimeException("Invalid Access Token")
+
+        // 권한 정보 추출
+        val authorities: Collection<GrantedAuthority> = (auth as String)
+            .split(",")
+            .map { SimpleGrantedAuthority(it) }
+
+        val principal = User(claims.subject, "", authorities)
+        return UsernamePasswordAuthenticationToken(principal, token, authorities)
     }
 
     private fun getAccessTokenClaims(token: String): Claims =

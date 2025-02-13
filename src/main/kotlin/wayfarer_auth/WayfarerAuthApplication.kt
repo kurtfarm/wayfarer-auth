@@ -5,8 +5,8 @@ import org.springframework.boot.runApplication
 
 
 @SpringBootApplication
-class WayfarerUserApplication
+class WayfarerAuthApplication
 
 fun main(args: Array<String>){
-    runApplication<WayfarerUserApplication>(*args)
+    runApplication<WayfarerAuthApplication>(*args)
 }
