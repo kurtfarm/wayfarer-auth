@@ -1,21 +1,17 @@
 package wayfarer_auth.config.jwt
 
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.io.Decoders
-import io.jsonwebtoken.security.Keys
-import org.junit.jupiter.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.*
 
-//@SpringBootTest
+@SpringBootTest
 class TokenProviderTest {
 
     @Autowired
     private lateinit var tokenProvider: TokenProvider
+
     @Autowired
     private lateinit var jwtProperties: JwtProperties
 
@@ -33,7 +29,8 @@ class TokenProviderTest {
         val token = tokenProvider.generateToken(userId)
 
         // Then
-        assertNotNull(token)
+        assertThat(token).isNotNull()
+        assertThat(token).isNotEmpty()
         println("Generated Token: $token")
     }
 
@@ -60,9 +57,9 @@ class TokenProviderTest {
         val authentication = tokenProvider.getAuthentication(token)
 
         // Then
-        assertNotNull(authentication)
-        assertEquals(userId.toString(), authentication.name)
-        assertTrue(authentication.authorities.isNotEmpty())
+        assertThat(authentication).isNotNull()
+        assertThat(authentication.name).isEqualTo(userId.toString())
+        assertThat(authentication.authorities).isNotEmpty()
     }
 
 //    private fun generateExpiredToken(): String {

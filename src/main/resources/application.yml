@@ -18,7 +18,6 @@ server:
   port: 8080
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration:
-    access: 3600000 # 1시간
-    refresh: 604800000 # 7일
+  secret-key: ${JWT_SECRET}
+  access-token-expiration: 3600000 # 1시간
+  refresh-token-expiration: 604800000
