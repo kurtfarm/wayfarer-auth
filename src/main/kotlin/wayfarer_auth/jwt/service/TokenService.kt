@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
 import wayfarer_auth.jwt.config.JwtProperties
+import wayfarer_auth.jwt.util.RefreshTokenTemplate
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class TokenService(
     private val jwtProperties: JwtProperties,
     private val redisTemplate: RedisTemplate<String, Any>
-) {
+) : RefreshTokenTemplate(redisTemplate) {
     private val signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey)) // access token secret key
     fun generateAccessToken(userId: Long): String {
         val now = Date()
@@ -31,7 +32,7 @@ class TokenService(
         val expiryDate = Date(now.time + jwtProperties.refreshTokenExpiration)
         val refreshToken = makeToken(expiryDate, userId, "REFRESH")
 
-        saveRefreshToken(refreshToken, userId)
+        saveRefreshToken(refreshToken, userId, jwtProperties.refreshTokenExpiration)
 
         return refreshToken
     }
@@ -63,19 +64,6 @@ class TokenService(
             }
         }
         return null
-    }
-
-    fun getRefreshToken(key: String): String? =
-        redisTemplate.opsForValue().get(key) as? String
-
-
-    fun saveRefreshToken(token: String, userId: Long) {
-        val key = "refreshToken:$userId" // 사용자별 키 관리
-        redisTemplate.opsForValue().set(key, token, jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
-    }
-
-    fun deleteRefreshToken(key: String) {
-        redisTemplate.delete(key)
     }
 
 //    fun validateAccessToken(token: String): Boolean {
