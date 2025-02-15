@@ -15,9 +15,16 @@ class TokenProvider(
     private val jwtProperties: JwtProperties
 ) {
     private val signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey)) // access token secret key
-    fun generateToken(userId: Long): String {
+    fun generateAccessToken(userId: Long): String {
         val now = Date()
         val expiryDate = Date(now.time + jwtProperties.accessTokenExpiration)
+
+        return makeToken(expiryDate, userId)
+    }
+
+    fun generateRefreshToken(userId: Long): String {
+        val now = Date()
+        val expiryDate = Date(now.time + jwtProperties.refreshTokenExpiration)
 
         return makeToken(expiryDate, userId)
     }
