@@ -3,7 +3,7 @@ package wayfarer_auth.jwt.util
 import org.springframework.data.redis.core.RedisTemplate
 import java.util.concurrent.TimeUnit
 
-abstract class RefreshTokenTemplate(
+open class RefreshTokenTemplate(
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
     fun getRefreshToken(key: String): String? =

@@ -42,6 +42,7 @@ class TokenService(
             .setSubject(userId.toString())
             .claim("type", tokenType)
             .setIssuedAt(Date())
+            .claim("nonce", UUID.randomUUID().toString()) // 랜덤 Claim 추가
             .setExpiration(expiry)
             .signWith(signKey)
             .compact()
@@ -55,13 +56,11 @@ class TokenService(
     fun reissueRefreshTokenIfExpired(userId: Long, token: String): String? { // 기간이 만료된 경우 이전의 refresh token은 삭제 후 재발급
         val key = "refreshToken:$userId"
 
-        if (validateStoredRefreshToken(userId, token)) { // RTR
-            val ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS) ?: 0
-            if (ttl <= 0) {
-                deleteRefreshToken(key)
-                val newRefreshToken = generateRefreshToken(userId)
-                return newRefreshToken
-            }
+        val ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS) ?: 0
+        if (ttl <= 0) {
+            deleteRefreshToken(key)
+            val newRefreshToken = generateRefreshToken(userId)
+            return newRefreshToken
         }
         return null
     }
