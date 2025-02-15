@@ -9,6 +9,9 @@ abstract class RefreshTokenTemplate(
     fun getRefreshToken(key: String): String? =
         redisTemplate.opsForValue().get(key) as? String
 
+    fun getRefreshExpire(key: String): Long? =
+        redisTemplate.getExpire(key,TimeUnit.MILLISECONDS)
+
     fun saveRefreshToken(token: String, userId: Long, expiration: Long) {
         val key = "refreshToken:$userId" // 사용자별 키 관리
         redisTemplate.opsForValue().set(key, token, expiration, TimeUnit.MILLISECONDS)
