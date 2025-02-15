@@ -1,4 +1,4 @@
-package wayfarer_auth.config
+package wayfarer_auth.jwt.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

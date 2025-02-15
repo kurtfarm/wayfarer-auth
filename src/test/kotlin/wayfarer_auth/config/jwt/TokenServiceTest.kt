@@ -5,19 +5,21 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import wayfarer_auth.jwt.config.JwtProperties
+import wayfarer_auth.jwt.service.TokenService
 
 @SpringBootTest
-class TokenProviderTest {
+class TokenServiceTest {
 
     @Autowired
-    private lateinit var tokenProvider: TokenProvider
+    private lateinit var tokenProvider: TokenService
 
     @Autowired
     private lateinit var jwtProperties: JwtProperties
 
     @BeforeEach
     fun setUp() {
-        tokenProvider = TokenProvider(jwtProperties)
+        tokenProvider = TokenService(jwtProperties)
     }
 
     @Test

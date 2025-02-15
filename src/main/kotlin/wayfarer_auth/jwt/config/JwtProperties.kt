@@ -1,4 +1,4 @@
-package wayfarer_auth.config.jwt
+package wayfarer_auth.jwt.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

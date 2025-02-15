@@ -1,4 +1,4 @@
-package wayfarer_auth.entity
+package wayfarer_auth.user.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.MappedSuperclass

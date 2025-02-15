@@ -1,4 +1,4 @@
-package wayfarer_auth.config.jwt
+package wayfarer_auth.jwt.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -8,10 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
+import wayfarer_auth.jwt.config.JwtProperties
 import java.util.*
 
 @Service
-class TokenProvider(
+class TokenService(
     private val jwtProperties: JwtProperties
 ) {
     private val signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey)) // access token secret key
