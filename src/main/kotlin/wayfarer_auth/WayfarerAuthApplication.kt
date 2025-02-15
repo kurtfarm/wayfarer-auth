@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-@EnableJpaAuditing
 class WayfarerAuthApplication
 
 fun main(args: Array<String>){
