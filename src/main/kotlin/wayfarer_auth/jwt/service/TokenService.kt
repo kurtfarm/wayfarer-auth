@@ -45,9 +45,37 @@ class TokenService(
             .signWith(signKey)
             .compact()
 
-    private fun saveRefreshToken(token: String, userId: Long){
+    fun validateStoredRefreshToken(userId: Long, token: String): Boolean {
+        val key = "refreshToken:$userId"
+        val storedToken = getRefreshToken(key)
+        return storedToken == token
+    }
+
+    fun reissueRefreshTokenIfExpired(userId: Long, token: String): String? { // 기간이 만료된 경우 이전의 refresh token은 삭제 후 재발급
+        val key = "refreshToken:$userId"
+
+        if (validateStoredRefreshToken(userId, token)) { // RTR
+            val ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS) ?: 0
+            if (ttl <= 0) {
+                deleteRefreshToken(key)
+                val newRefreshToken = generateRefreshToken(userId)
+                return newRefreshToken
+            }
+        }
+        return null
+    }
+
+    fun getRefreshToken(key: String): String? =
+        redisTemplate.opsForValue().get(key) as? String
+
+
+    fun saveRefreshToken(token: String, userId: Long) {
         val key = "refreshToken:$userId" // 사용자별 키 관리
         redisTemplate.opsForValue().set(key, token, jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
+    }
+
+    fun deleteRefreshToken(key: String) {
+        redisTemplate.delete(key)
     }
 
 //    fun validateAccessToken(token: String): Boolean {
