@@ -1,4 +1,4 @@
-package wayfarer_auth.entity
+package wayfarer_auth.user.entity
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener

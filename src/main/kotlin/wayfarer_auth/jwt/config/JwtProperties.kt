@@ -1,9 +1,9 @@
-package wayfarer_auth.config.jwt
+package wayfarer_auth.jwt.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "jwt")
-class JwtProperties(
+data class JwtProperties(
     val secretKey: String,
     val accessTokenExpiration: Long,
     val refreshTokenExpiration: Long
