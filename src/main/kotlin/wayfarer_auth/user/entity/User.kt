@@ -23,8 +23,12 @@ class User(
     @Column(name = "name", nullable = false)
     var name: String,
 
-    @Column(name = "phone_number", nullable = false)
-    var phoneNumber: String,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "admin_type", nullable = false)
+    var adminType: AdminType,
+
+//    @Column(name = "phone_number", nullable = false)
+//    var phoneNumber: String,
 
     @Column(name = "is_withdrawal", nullable = false)
     var isWithdrawal: Boolean = false // 회원탈퇴 여부 기본값은 false
