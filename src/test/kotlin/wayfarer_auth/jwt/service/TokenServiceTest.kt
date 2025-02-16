@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.RedisTemplate
+import wayfarer_auth.jwt.repository.RefreshTokenRepository
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @SpringBootTest
@@ -15,6 +17,9 @@ class TokenServiceTest {
 
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, Any>
+
+    @Autowired
+    private lateinit var refreshTokenRepository: RefreshTokenRepository
 
     @Test
     fun `유저의 아이디를 전달해 Access Token을 만들 수 있다`() {
@@ -62,17 +67,19 @@ class TokenServiceTest {
     fun `유저의 아이디를 전달해 Refresh Token을 만들고 Redis에 저장할 수 있다`() {
         // Given
         val userId = 1L
-        val expiration = 604800000
-        val key = "refreshToken:$userId"
+        val refreshToken = tokenService.generateRefreshToken(userId)
+        val key = "RT::$refreshToken-v1"
+        val expiryDate = Date(Date().time + 604800000)
 
         // When
-        val refreshToken = tokenService.generateRefreshToken(userId)
-        val storedToken = tokenService.getRefreshToken(key)
-        val ttl = tokenService.getRefreshExpire(key)
+        refreshTokenRepository.saveHash(key, refreshToken, userId, expiryDate.time)
+        val storedUserId = refreshTokenRepository.findHash(key, refreshToken)
+        println(storedUserId)
+        val ttl = refreshTokenRepository.getExpire(key)
 
         // Then
-        assertThat(refreshToken).isNotNull()
-        assertThat(refreshToken).isEqualTo(storedToken)
+        assertThat(refreshToken).isNotNull
+        assertThat(storedUserId).isEqualTo(userId)
         assertThat(ttl).isGreaterThan(0)
         println("Generated Refresh Token: $refreshToken")
         println("Token TTL: $ttl milliseconds")
@@ -83,17 +90,22 @@ class TokenServiceTest {
         // Given
         val userId = 1L
         val refreshToken = tokenService.generateRefreshToken(userId)
-        val key = "refreshToken:$userId"
-
-        redisTemplate.expire(key, 0, TimeUnit.MILLISECONDS) // 만료
+        val key = "RT::$refreshToken-v1"
 
         // When
-        val newToken = tokenService.reissueRefreshTokenIfExpired(userId, refreshToken)
+        redisTemplate.expire(key, 1, TimeUnit.MILLISECONDS)
+        Thread.sleep(10)
+
+        if (tokenService.isValidExpiredToken(refreshToken)){
+            refreshTokenRepository.deleteHash(key, refreshToken)
+        }
+
+        val newRefreshToken = tokenService.reissueRefreshToken(refreshToken, userId)
 
         // Then
-        assertThat(newToken).isNotNull()
-        assertThat(newToken).isNotEqualTo(refreshToken)
-        println("Reissued Refresh Token: $newToken")
+        assertThat(newRefreshToken).isNotNull
+        assertThat(newRefreshToken).isNotEqualTo(refreshToken)
+        println("Reissued Refresh Token: $newRefreshToken")
     }
 
     //    private fun generateExpiredToken(): String {

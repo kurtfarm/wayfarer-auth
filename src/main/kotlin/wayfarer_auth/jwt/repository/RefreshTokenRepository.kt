@@ -12,12 +12,12 @@ class RefreshTokenRepository(
     private val hashOperations: HashOperations<String, String, Any>
 ) {
     fun findHash(key: String, field: String): Long? {
-        @Suppress("UNCHECKED_CAST")
-        return hashOperations.get(key, field) as? Long
+        val value = hashOperations.get(key, field) as? String
+        return value?.toLongOrNull()
     }
 
     fun saveHash(key: String, field: String, value: Long, expiryDate: Long) {
-        hashOperations.put(key, field, value)
+        hashOperations.put(key, field, value.toString())
         redisTemplate.expire(key, expiryDate, TimeUnit.MILLISECONDS) // 만료시간 설정
     }
 

@@ -55,10 +55,8 @@ class TokenService(
         return ttl <= 0
     }
 
-    fun reissueRefreshToken(refreshToken: String): String? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
+    fun reissueRefreshToken(refreshToken: String, userId: Long): String? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
         val key = "RT::${refreshToken}-v1"
-        val userId = refreshTokenRepository.findHash(key, refreshToken)
-            ?: throw IllegalArgumentException("Invalid Token")
 
         refreshTokenRepository.deleteHash(key, refreshToken);
         val newRefreshToken = generateRefreshToken(userId);
