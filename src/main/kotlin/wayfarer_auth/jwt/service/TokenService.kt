@@ -43,10 +43,10 @@ class TokenService(
         return refreshToken
     }
 
-    fun isInvalidStoredRefreshToken(refreshToken: String): Boolean {
+    fun isValidStoredRefreshToken(refreshToken: String): Boolean {
         val key = "RT::${refreshToken}-v1"
         val userId = refreshTokenRepository.findHash(key, refreshToken);
-        return userId == null
+        return userId != null
     }
 
     fun isValidExpiredToken(refreshToken: String): Boolean {
