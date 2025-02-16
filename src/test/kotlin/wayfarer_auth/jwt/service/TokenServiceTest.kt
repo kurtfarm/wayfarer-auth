@@ -96,7 +96,7 @@ class TokenServiceTest {
         redisTemplate.expire(key, 1, TimeUnit.MILLISECONDS)
         Thread.sleep(10)
 
-        if (tokenService.isValidExpiredToken(refreshToken)){
+        if (tokenService.isValidStoredRefreshToken(refreshToken)){
             refreshTokenRepository.deleteHash(key, refreshToken)
         }
 

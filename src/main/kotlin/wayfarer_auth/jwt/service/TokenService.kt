@@ -49,12 +49,6 @@ class TokenService(
         return userId != null
     }
 
-    fun isValidExpiredToken(refreshToken: String): Boolean {
-        val key = "RT::${refreshToken}-v1"
-        val ttl = refreshTokenRepository.getExpire(key) ?: 0
-        return ttl <= 0
-    }
-
     fun reissueRefreshToken(refreshToken: String, userId: Long): String? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
         val key = "RT::${refreshToken}-v1"
 
