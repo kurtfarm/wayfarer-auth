@@ -4,65 +4,66 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Service
 import wayfarer_auth.jwt.config.JwtProperties
-import wayfarer_auth.jwt.util.RefreshTokenTemplate
+import wayfarer_auth.jwt.repository.RefreshTokenRepository
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Service
 class TokenService(
     private val jwtProperties: JwtProperties,
-    private val redisTemplate: RedisTemplate<String, Any>
-) : RefreshTokenTemplate(redisTemplate) {
+    private val refreshTokenRepository: RefreshTokenRepository
+) {
     private val signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey)) // access token secret key
     fun generateAccessToken(userId: Long): String {
-        val now = Date()
-        val expiryDate = Date(now.time + jwtProperties.accessTokenExpiration)
+        val expiryDate = Date(Date().time + jwtProperties.accessTokenExpiration)
 
-        return makeToken(expiryDate, userId, "ACCESS")
+        return makeToken(expiryDate, userId)
     }
 
-    fun generateRefreshToken(userId: Long): String {
-        val now = Date()
-        val expiryDate = Date(now.time + jwtProperties.refreshTokenExpiration)
-        val refreshToken = makeToken(expiryDate, userId, "REFRESH")
-
-        saveRefreshToken(refreshToken, userId, jwtProperties.refreshTokenExpiration)
-
-        return refreshToken
-    }
-
-    private fun makeToken(expiry: Date, userId: Long, tokenType: String): String =
+    private fun makeToken(expiry: Date, userId: Long): String =
         Jwts.builder()
             .setSubject(userId.toString())
-            .claim("type", tokenType)
             .setIssuedAt(Date())
-            .claim("nonce", UUID.randomUUID().toString()) // 랜덤 Claim 추가
+            // .claim("nonce", UUID.randomUUID().toString()) // 랜덤 Claim 추가
             .setExpiration(expiry)
             .signWith(signKey)
             .compact()
 
-    fun validateStoredRefreshToken(userId: Long, token: String): Boolean {
-        val key = "refreshToken:$userId"
-        val storedToken = getRefreshToken(key)
-        return storedToken == token
+    fun generateRefreshToken(userId: Long): String {
+        val expiryDate = Date(Date().time + jwtProperties.refreshTokenExpiration)
+        val refreshToken = UUID.randomUUID().toString()
+        val key = "RT::${refreshToken}-v1"
+
+        refreshTokenRepository.saveHash(key, refreshToken, userId, expiryDate.time);
+
+        return refreshToken
     }
 
-    fun reissueRefreshTokenIfExpired(userId: Long, token: String): String? { // 기간이 만료된 경우 이전의 refresh token은 삭제 후 재발급
-        val key = "refreshToken:$userId"
+    fun isInvalidStoredRefreshToken(refreshToken: String): Boolean {
+        val key = "RT::${refreshToken}-v1"
+        val userId = refreshTokenRepository.findHash(key, refreshToken);
+        return userId == null
+    }
 
-        val ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS) ?: 0
-        if (ttl <= 0) {
-            deleteRefreshToken(key)
-            val newRefreshToken = generateRefreshToken(userId)
-            return newRefreshToken
-        }
-        return null
+    fun isValidExpiredToken(refreshToken: String): Boolean {
+        val key = "RT::${refreshToken}-v1"
+        val ttl = refreshTokenRepository.getExpire(key) ?: 0
+        return ttl <= 0
+    }
+
+    fun reissueRefreshToken(refreshToken: String): String? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
+        val key = "RT::${refreshToken}-v1"
+        val userId = refreshTokenRepository.findHash(key, refreshToken)
+            ?: throw IllegalArgumentException("Invalid Token")
+
+        refreshTokenRepository.deleteHash(key, refreshToken);
+        val newRefreshToken = generateRefreshToken(userId);
+
+        return newRefreshToken
     }
 
 //    fun validateAccessToken(token: String): Boolean {
