@@ -9,11 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails
 @Table(name = "user")
 @EntityListeners(AuditingEntityListener::class)
 class User(
-    @Id
-    @Column(name = "id", nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
-
     @Column(name = "email", nullable = false, unique = true)
     var email: String,
 
@@ -30,9 +25,15 @@ class User(
 //    @Column(name = "phone_number", nullable = false)
 //    var phoneNumber: String,
 
+) : BaseEntity(), UserDetails {
+    @Id
+    @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+
     @Column(name = "is_withdrawal", nullable = false)
     var isWithdrawal: Boolean = false // 회원탈퇴 여부 기본값은 false
-) : BaseEntity(), UserDetails {
+
     // UserDetails 인터페이스 메서드 구현
     override fun getAuthorities() =
         listOf(SimpleGrantedAuthority("ROLE_USER")) // TODO : 별도의 role 필드 필요? => 화면설계서 보고 정의

@@ -1,24 +1,24 @@
-//package wayfarer_auth.config
-//
-//import org.springframework.context.annotation.Bean
-//import org.springframework.context.annotation.Configuration
-//import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+package wayfarer_auth.user.config
+
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity
 //import org.springframework.security.config.http.SessionCreationPolicy
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-//import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 //import org.springframework.security.web.SecurityFilterChain
 //import org.springframework.web.cors.CorsConfiguration
 //import org.springframework.web.cors.CorsConfigurationSource
 //import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-////import wayfarer_auth.config.jwt.JwtAuthenticationFilter
-//
-//@Configuration
-//@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
-//class SecurityConfig(
-////    private val jwtAuthenticationFilter: JwtAuthenticationFilter
-//) {
-//
+//import wayfarer_auth.config.jwt.JwtAuthenticationFilter
+
+@Configuration
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
+class SecurityConfig(
+//    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+) {
+
 //    @Bean
 //    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 //        return http
@@ -37,12 +37,12 @@
 //            }
 //            .build()
 //    }
-//
-//    @Bean
-//    fun passwordEncoder(): PasswordEncoder {
-//        return BCryptPasswordEncoder()
-//    }
-//
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
+    }
+
 //    @Bean
 //    fun corsConfigurationSource(): CorsConfigurationSource { //TODO : 게이트웨이 설정에 따라 변경
 //        return UrlBasedCorsConfigurationSource().apply {
@@ -55,4 +55,4 @@
 //            })
 //        }
 //    }
-//}
+}
