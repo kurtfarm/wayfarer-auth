@@ -6,4 +6,5 @@ import wayfarer_auth.user.entity.User
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
+    fun findByEmail(email: String): User?
 }

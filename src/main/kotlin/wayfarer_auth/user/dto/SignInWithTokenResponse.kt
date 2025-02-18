@@ -2,7 +2,7 @@ package wayfarer_auth.user.dto
 
 import wayfarer_auth.jwt.dto.TokenResponse
 
-data class SignUpWithTokenResponse(
-    val user: SignUpRequest,
+class SignInWithTokenResponse(
+    val email: String,
     val tokens: TokenResponse
 )

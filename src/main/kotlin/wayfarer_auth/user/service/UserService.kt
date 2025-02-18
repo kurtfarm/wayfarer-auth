@@ -3,6 +3,7 @@ package wayfarer_auth.user.service
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import wayfarer_auth.user.dto.SignInRequest
 import wayfarer_auth.user.dto.SignUpRequest
 import wayfarer_auth.user.entity.User
 import wayfarer_auth.user.repository.UserRepository
@@ -22,5 +23,11 @@ class UserService(
         )
         userRepository.save(user)
         return user
+    }
+
+    @Transactional
+    fun signIn(req: SignInRequest): User? {
+        val user = userRepository.findByEmail(req.email) ?: return null
+        return if (passwordEncoder.matches(req.pw, user.getPassword())) user else null
     }
 }
