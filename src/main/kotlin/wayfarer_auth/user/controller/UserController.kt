@@ -2,8 +2,10 @@ package wayfarer_auth.user.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import wayfarer_auth.jwt.dto.TokenResponse
@@ -15,12 +17,12 @@ import wayfarer_auth.user.service.UserService
 
 @RestController
 @RequestMapping("/api/auth")
-class UserController (
+class UserController(
     private val userService: UserService,
     private val tokenService: TokenService
-){
+) {
     @PostMapping("/signup")
-    fun signUp(@RequestBody req: SignUpRequest):ResponseEntity<String> {
+    fun signUp(@RequestBody req: SignUpRequest): ResponseEntity<String> {
         val user = userService.register(req)
         return ResponseEntity.ok("회원가입 성공")
     }
@@ -43,4 +45,9 @@ class UserController (
         return ResponseEntity.ok(response)
     }
 
+    @DeleteMapping("/logout")
+    fun logout(@RequestHeader("Refresh-Token") refreshToken: String): ResponseEntity<String> {
+        tokenService.deleteRefreshToken(refreshToken) // 리프레시 토큰 삭제
+        return ResponseEntity.ok("로그아웃 성공")
+    }
 }

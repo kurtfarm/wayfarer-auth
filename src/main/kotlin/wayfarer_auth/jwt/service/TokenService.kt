@@ -57,6 +57,12 @@ class TokenService(
 
         return newRefreshToken
     }
+
+    fun deleteRefreshToken(refreshToken: String){
+        val key = "RT::${refreshToken}-v1"
+        refreshTokenRepository.deleteHash(key,refreshToken);
+    }
+
 //    fun validateAccessToken(token: String): Boolean {
 //        try {
 //            getAccessTokenClaims(token)
