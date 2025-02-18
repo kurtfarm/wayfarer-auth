@@ -3,7 +3,7 @@ package wayfarer_auth.user.service
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import wayfarer_auth.user.dto.SignUpResponse
+import wayfarer_auth.user.dto.SignUpRequest
 import wayfarer_auth.user.entity.User
 import wayfarer_auth.user.repository.UserRepository
 
@@ -13,7 +13,7 @@ class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional
-    fun register(req: SignUpResponse): User {
+    fun register(req: SignUpRequest): User {
         val user = User(
             email = req.email,
             pw = passwordEncoder.encode(req.pw),

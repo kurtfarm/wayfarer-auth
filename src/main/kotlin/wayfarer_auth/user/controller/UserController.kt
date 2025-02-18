@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import wayfarer_auth.jwt.dto.TokenResponse
 import wayfarer_auth.jwt.service.TokenService
-import wayfarer_auth.user.dto.SignUpResponse
+import wayfarer_auth.user.dto.SignUpRequest
 import wayfarer_auth.user.dto.SignUpWithTokenResponse
 import wayfarer_auth.user.service.UserService
 
@@ -18,13 +18,13 @@ class UserController (
     private val tokenService: TokenService
 ){
     @PostMapping("/signup")
-    fun signUp(@RequestBody req: SignUpResponse): ResponseEntity<SignUpWithTokenResponse> {
+    fun signUp(@RequestBody req: SignUpRequest): ResponseEntity<SignUpWithTokenResponse> {
         val user = userService.register(req)
         val accessToken = tokenService.generateAccessToken(user.id)
         val refreshToken = tokenService.generateRefreshToken(user.id)
 
         val response = SignUpWithTokenResponse(
-            user = SignUpResponse(
+            user = SignUpRequest(
                 email = user.email,
                 pw = user.getPassword(),
                 name = user.name,
