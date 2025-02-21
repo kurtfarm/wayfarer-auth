@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import wayfarer_auth.jwt.dto.TokenResponse
 import wayfarer_auth.jwt.service.TokenService
 import wayfarer_auth.user.dto.SignInRequest
 import wayfarer_auth.user.dto.SignInWithTokenResponse
@@ -23,31 +22,19 @@ class UserController(
 ) {
     @PostMapping("/signup")
     fun signUp(@RequestBody req: SignUpRequest): ResponseEntity<String> {
-        val user = userService.register(req)
+        userService.register(req)
         return ResponseEntity.ok("회원가입 성공")
     }
 
     @PostMapping("/login")
     fun login(@RequestBody req: SignInRequest): ResponseEntity<SignInWithTokenResponse> {
-        val user = userService.signIn(req) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        val accessToken = tokenService.generateAccessToken(user.id)
-        val refreshToken = tokenService.generateRefreshToken(user.id)
-
-        val response = SignInWithTokenResponse(
-            email = user.email,
-            tokens = TokenResponse(
-                accessToken = accessToken,
-                refreshToken = refreshToken
-            )
-        )
-
+        val response = userService.signIn(req) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         return ResponseEntity.ok(response)
     }
 
     @DeleteMapping("/logout")
     fun logout(@RequestHeader("Refresh-Token") refreshToken: String): ResponseEntity<String> {
-        tokenService.deleteRefreshToken(refreshToken) // 리프레시 토큰 삭제
+        userService.signOut(refreshToken)
         return ResponseEntity.ok("로그아웃 성공")
     }
 }

@@ -25,9 +25,7 @@ class TokenService(
         return tokenValidator.isValidStoredRefreshToken(refreshToken)
     }
 
-    fun deleteRefreshToken(refreshToken: String){
+    fun deleteRefreshToken(refreshToken: String) {
         return tokenGenerator.deleteRefreshToken(refreshToken)
     }
-
-
 }
