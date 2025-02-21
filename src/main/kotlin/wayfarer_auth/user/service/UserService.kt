@@ -3,7 +3,6 @@ package wayfarer_auth.user.service
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import wayfarer_auth.jwt.dto.TokenResponse
 import wayfarer_auth.jwt.service.TokenService
 import wayfarer_auth.user.dto.SignInRequest
 import wayfarer_auth.user.dto.SignInWithTokenResponse
@@ -19,12 +18,7 @@ class UserService(
 ) {
     @Transactional
     fun register(req: SignUpRequest) {
-        val user = User(
-            email = req.email,
-            pw = passwordEncoder.encode(req.pw),
-            name = req.name,
-            adminType = req.adminType
-        )
+        val user = User.of(req, passwordEncoder)
         userRepository.save(user)
     }
 
@@ -36,13 +30,7 @@ class UserService(
             val accessToken = tokenService.generateAccessToken(user.id)
             val refreshToken = tokenService.generateRefreshToken(user.id)
 
-            SignInWithTokenResponse(
-                email = user.email,
-                tokens = TokenResponse(
-                    accessToken = accessToken,
-                    refreshToken = refreshToken
-                )
-            )
+            SignInWithTokenResponse.of(user, accessToken, refreshToken)
         } else {
             null
         }
