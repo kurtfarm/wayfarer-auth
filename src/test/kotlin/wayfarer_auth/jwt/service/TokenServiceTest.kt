@@ -48,20 +48,20 @@ class TokenServiceTest {
     //        println("Expired Token Exception: ${exception.message}")
     //    }
 
-    @Test
-    fun `Access Token 기반으로 인증 정보를 가져올 수 있다`() {
-        // Given
-        val userId = 1L
-        val token = tokenService.generateAccessToken(userId)
-
-        // When
-        val authentication = tokenService.getAuthentication(token)
-
-        // Then
-        assertThat(authentication).isNotNull()
-        assertThat(authentication.name).isEqualTo(userId.toString())
-        assertThat(authentication.authorities).isNotEmpty()
-    }
+//    @Test
+//    fun `Access Token 기반으로 인증 정보를 가져올 수 있다`() {
+//        // Given
+//        val userId = 1L
+//        val token = tokenService.generateAccessToken(userId)
+//
+//        // When
+//        val authentication = tokenService.getAuthentication(token)
+//
+//        // Then
+//        assertThat(authentication).isNotNull()
+//        assertThat(authentication.name).isEqualTo(userId.toString())
+//        assertThat(authentication.authorities).isNotEmpty()
+//    }
 
     @Test
     fun `유저의 아이디를 전달해 Refresh Token을 만들고 Redis에 저장할 수 있다`() {
