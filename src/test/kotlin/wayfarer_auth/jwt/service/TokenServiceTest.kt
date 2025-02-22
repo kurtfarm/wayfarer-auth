@@ -86,26 +86,24 @@ class TokenServiceTest {
     }
 
     @Test
-    fun `Refresh Token이 만료되었을 때 새 토큰이 재발급된다`() {
+    fun `Access Token을 재발급할 때 새로운 Refresh 토큰과 Access 토큰이 발급된다`() {
         // Given
         val userId = 1L
         val refreshToken = tokenService.generateRefreshToken(userId)
         val key = "RT::$refreshToken-v1"
 
-        // When
-        redisTemplate.expire(key, 1, TimeUnit.MILLISECONDS)
-        Thread.sleep(10)
+        // when
+        val tokenResponse = tokenService.reissueRefreshToken(refreshToken)
 
-        if (tokenService.isValidStoredRefreshToken(refreshToken)){
-            refreshTokenRepository.deleteHash(key, refreshToken)
-        }
+        // then
+        requireNotNull(tokenResponse) { "tokenResponse should not be null" }
 
-        val newRefreshToken = tokenService.reissueRefreshToken(refreshToken, userId)
+        assertThat(tokenResponse.refreshToken).isNotNull
+        assertThat(tokenResponse.accessToken).isNotNull
+        assertThat(tokenResponse.refreshToken).isNotEqualTo(refreshToken)
 
-        // Then
-        assertThat(newRefreshToken).isNotNull
-        assertThat(newRefreshToken).isNotEqualTo(refreshToken)
-        println("Reissued Refresh Token: $newRefreshToken")
+        println("Reissued Access Token: ${tokenResponse.accessToken}")
+        println("Reissued Refresh Token: ${tokenResponse.refreshToken}")
     }
 
     //    private fun generateExpiredToken(): String {
