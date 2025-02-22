@@ -1,6 +1,7 @@
 package wayfarer_auth.jwt.service
 
 import org.springframework.stereotype.Service
+import wayfarer_auth.jwt.dto.TokenResponse
 import wayfarer_auth.jwt.service.generator.TokenGenerator
 import wayfarer_auth.jwt.service.validator.TokenValidator
 
@@ -17,8 +18,11 @@ class TokenService(
         return tokenGenerator.generateRefreshToken(userId)
     }
 
-    fun reissueRefreshToken(refreshToken: String, userId: Long): String? {
-        return tokenGenerator.reissueRefreshToken(refreshToken, userId)
+    fun reissueRefreshToken(refreshToken: String): TokenResponse? {
+        if (!isValidStoredRefreshToken(refreshToken)){
+            throw IllegalArgumentException("Invalid Refresh Token")
+        }
+        return tokenGenerator.reissueRefreshToken(refreshToken)
     }
 
     fun isValidStoredRefreshToken(refreshToken: String): Boolean {

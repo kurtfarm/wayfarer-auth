@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 import wayfarer_auth.jwt.config.JwtProperties
+import wayfarer_auth.jwt.dto.TokenResponse
 import wayfarer_auth.jwt.repository.RefreshTokenRepository
 import java.util.*
 
@@ -40,16 +41,20 @@ class TokenGeneratorImpl(
         return refreshToken
     }
 
-    override fun reissueRefreshToken(
-        refreshToken: String,
-        userId: Long
-    ): String? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
+    override fun reissueRefreshToken(refreshToken: String): TokenResponse? { // 재발급 신청시 이전의 refresh token은 삭제 후 재발급
         val key = "RT::${refreshToken}-v1"
 
-        refreshTokenRepository.deleteHash(key, refreshToken);
-        val newRefreshToken = generateRefreshToken(userId);
+        return refreshTokenRepository.findHash(key, refreshToken)?.let { userId ->
+            refreshTokenRepository.deleteHash(key, refreshToken)
 
-        return newRefreshToken
+            val newAccessToken = generateAccessToken(userId)
+            val newRefreshToken = generateRefreshToken(userId)
+            println(newRefreshToken)
+            TokenResponse(
+                accessToken = newAccessToken,
+                refreshToken = newRefreshToken
+            )
+        }
     }
 
     override fun deleteRefreshToken(refreshToken: String){
