@@ -33,7 +33,7 @@ class UserController(
     }
 
     @DeleteMapping("/logout")
-    fun logout(@RequestHeader("Refresh-Token") refreshToken: String): ResponseEntity<String> {
+    fun logout(@RequestHeader("X-Refresh-Token") refreshToken: String): ResponseEntity<String> {
         userService.signOut(refreshToken)
         return ResponseEntity.ok("로그아웃 성공")
     }
