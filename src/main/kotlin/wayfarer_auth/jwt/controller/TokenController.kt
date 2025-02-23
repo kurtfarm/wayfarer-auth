@@ -13,9 +13,9 @@ import wayfarer_auth.jwt.service.TokenService
 class TokenController (
     private val tokenService: TokenService
 ){
-    @PostMapping("/reissue")
-    fun reissue(
-        @RequestHeader("Refresh-Token") refreshToken: String
+    @PostMapping("/refresh")
+    fun refresh(
+        @RequestHeader("X-Refresh-Token") refreshToken: String
     ): ResponseEntity<TokenResponse> {
         val response = tokenService.reissueRefreshToken(refreshToken)
         return ResponseEntity.ok(response)
